@@ -1,4 +1,5 @@
 const User = require("../models/user-model");
+const bcrypt = require("bcrypt");
 
 const home = async (req, res) => {
   try {
@@ -11,7 +12,6 @@ const home = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-
     const { username, email, phone, password } = req.body;
     const userExist = await User.findOne({ email });
     if (userExist) {
@@ -24,11 +24,39 @@ const register = async (req, res) => {
       password,
     });
 
-    return res.status(200).json({ msg: userCreated }); // Return here to exit the function
+    return res.status(201).json({
+      msg: "Registration Successful",
+      token: await userCreated.generateToken(),
+      userId: userCreated._id.toString(),
+    }); // Return here to exit the function
   } catch (error) {
     console.log(error); // Log the error for debugging
     return res.status(500).json("Internal Server Error");
   }
 };
 
-module.exports = { home, register };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    //Email valid or not (db main exists krte yah nhi)
+    const userExist = await User.findOne({ email });
+    console.log(" User is " + userExist);
+    if (!userExist) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+    //compare password
+    const isPasswordValid = await bcrypt.compare(password, userExist.password);
+    if (isPasswordValid) {
+      return res.status(200).json({
+        msg: "Login Successful",
+        token: await userExist.generateToken(),
+        userId: userExist._id.toString(),
+      });
+    } else {
+      return res.status(401).json({ message: "Invalid Credentials" });
+    }
+  } catch (error) {
+    return res.status(500).json("Internal Server Error");
+  }
+};
+module.exports = { home, register, login };
