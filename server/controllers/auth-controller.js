@@ -30,8 +30,9 @@ const register = async (req, res) => {
       userId: userCreated._id.toString(),
     }); // Return here to exit the function
   } catch (error) {
-    console.log(error); // Log the error for debugging
-    return res.status(500).json("Internal Server Error");
+    // console.log(error); // Log the error for debugging
+    // return res.status(500).json("Internal Server Error");
+    next(error);
   }
 };
 
