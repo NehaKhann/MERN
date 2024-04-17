@@ -15,6 +15,8 @@ export const Register = () => {
     setUser({
       ...user,
       //giving dynamic value
+      //field can be either username or email or phone or password
+      //lets say phone update keya to wo phone ki value update karayga
       [name]: value,
     });
   };
@@ -63,7 +65,7 @@ export const Register = () => {
                     <input
                       type="email"
                       name="email"
-                      placeholder="enter your email"
+                      placeholder="email"
                       id="email"
                       required
                       autoComplete="off"
